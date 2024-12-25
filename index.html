@@ -1,0 +1,154 @@
+<!--
+ * @Author: Anixuil
+ * @Date: 2024-12-10 11:01:25
+ * @LastEditors: Anixuil
+ * @LastEditTime: 2024-12-25 14:24:21
+ * @Description: 圣诞快乐
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 图标 -->
+    <link rel="icon" href="./圣诞-圣诞树.svg" type="image/x-icon">
+    <title>Merry Christmas - 圣诞快乐</title>
+    <link rel="stylesheet" href="index.css">
+    <script src="./vue.min.js"></script>
+    <script src="https://unpkg.com/pinyin-pro"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- <img src="./github-icon.png" class="github-icon" @click="github"/> -->
+        <div class="tree-wrapper" v-if="startFlag">
+            <div class="tree">
+                <!-- --开头的属性是CSS的自定义属性，可通过var函数对其调用 -->
+                <div class="tree-light" v-for="(item,index) in 50"
+                    :style="{'--appear':index,'--y':2*index,'--rotate':1440-28.8*index,'--radius':12.5-0.25*index,'--speed':index*0.1,'--delay':index*0.05}">
+                </div>
+                <!-- 星星 -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 113.32 108.44" class="tree-star"
+                    style="--delay:50;">
+                    <path
+                        d="M90.19 104.33L57.12 87.38 24.4 105l5.91-36.69L3.44 42.65l36.72-5.72 16.1-33.5L73.06 36.6l36.83 4.97-26.35 26.21z"
+                        fill="none" stroke-width="6.88" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="text-wrapper">
+            <div class="text-zh">
+                <span class="text">圣诞快乐, 周同学</span>
+            </div>
+            <div class="text-en">
+                <span class="text">
+                    Merry Christmas
+                </span>
+            </div>
+            <div v-show="!startFlag && oneFlag" class="start-btn" @click="getZF">签收祝福</div>
+        </div>
+        <div class="footer-wrapper">
+            <!-- <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="320" height="65"
+                src="https://i.y.qq.com/n2/m/outchain/player/index.html?songid=1630706&songtype=0"></iframe> -->
+            <audio id="audio" src="./2024圣诞.mp3" autoplay loop></audio>
+        </div>
+        <!-- 备案 湘ICP备2022024189号-1 可以跳转到工信部-->
+        <!-- <div class="beian">
+            <a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">湘ICP备2022024189号-1</a>
+        </div> -->
+    </div>
+</body>
+<script>
+    new Vue({
+        el: '.container',
+        data: {
+            tree: 50,
+            startFlag: false,   // 开始标志
+            oneFlag: false,      // 一阶段标志
+        },
+        mounted() {
+            setInterval(this.createSnowflake, 10);
+            this.$nextTick(() => {
+                // 拿到地址栏上的?name=xxx中xxx的参数
+                const url = window.location.href;
+                let name = url.split('?name=')[1];
+                if (name) {
+                    let { pinyin } = pinyinPro;
+                    // 对name进行url解码
+                    name = decodeURIComponent(name);
+                    // 将中文名转换为拼音
+                    let enName = pinyin(name, {
+                        style: pinyin.STYLE_NORMAL, // 设置拼音风格
+                        heteronym: false, // 设置多音字是否展示
+                        toneType: 'none', // 设置声调风格
+                    });
+                    // 将拼音字符串转换为字符串 并首字母大写
+                    enName = enName.split(' ').map(item => item[0].toUpperCase() + item.slice(1)).join('');
+                    // 如果enName里包含有ü，将ü转换为v
+                    enName = enName.replace(/ü/g, 'v');
+                    switch (enName) {
+                        case "LiuLi":
+                            enName = 'Callidora';
+                            break;
+                        case "XianNv":
+                            enName = 'Fairy';
+                            break;
+                    }
+                    document.querySelector('.text-zh > .text').innerHTML = name + '，圣诞快乐';
+                    document.querySelector('.text-en > .text').innerHTML = 'Merry Christmas to ' + enName;
+                }
+                setTimeout(() => {
+                    this.oneFlag = true;
+                }, 2200);
+            })
+        },
+        methods: {
+            createSnowflake() {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+                snowflake.style.left = `${Math.random() * window.innerWidth}px`;
+                snowflake.style.width = `${Math.random() * 10 + 3}px`;
+                snowflake.style.fontSize = `${Math.random() * 10 + 5}px`;
+                snowflake.style.height = snowflake.style.width;
+                snowflake.style.animationDuration = `${Math.random() * 3 + 10}s`;
+                // 签收祝福后，生成一个随机数，1/5的概率是🍎，2/5的概率是❄️，1/5的概率是🎁，1/5的概率是💵，签收前全是❄️
+                const random = Math.random();
+                if (this.startFlag) {
+                    if (random < 0.2) {
+                        snowflake.innerHTML = '🍎';
+                    } else if (random < 0.4) {
+                        snowflake.innerHTML = '❄️';
+                    } else if (random < 0.6) {
+                        snowflake.innerHTML = '🎁';
+                    } else if (random < 0.8) {
+                        snowflake.innerHTML = '💵';
+                    } else {
+                        snowflake.innerHTML = '❄️';
+                    }
+                } else {
+                    snowflake.innerHTML = '❄️';
+                }
+                document.body.appendChild(snowflake);
+
+                setTimeout(() => {
+                    // 给当前的雪花添加监听，超出屏幕后删除dom
+                    document.body.removeChild(snowflake);
+                }, 5000);
+            },
+            getZF() {
+                this.$nextTick(() => {
+                    // 自动播放
+                    document.getElementById('audio').play();
+                    this.startFlag = true;
+                })
+            },
+            github() {
+                window.open('https://github.com/Anixuil/Chirsmas2024')
+            }
+        }
+    })
+</script>
+
+</html>
